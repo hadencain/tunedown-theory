@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scale Practice Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <div class="control-group">
+        <label>KEY</label>
+        <select id="key-select"></select>
+      </div>
+      <div class="control-group">
+        <label>SCALE</label>
+        <select id="scale-select"></select>
+        <span class="add-link" id="open-scale-editor">+ add custom scale</span>
+      </div>
+      <div class="control-group">
+        <label>TUNING</label>
+        <select id="tuning-select"></select>
+        <span class="add-link" id="open-tuning-editor">+ add custom tuning</span>
+      </div>
+      <div class="control-group" id="strings-group">
+        <label>STRINGS</label>
+        <div id="string-inputs"></div>
+        <span class="add-link" id="save-tuning-link">save as tuning...</span>
+      </div>
+    </aside>
+    <main id="tab-panel">
+      <div id="tab-header"></div>
+      <div id="positions-grid"></div>
+    </main>
+  </div>
+
+  <!-- Custom Scale Modal -->
+  <div id="scale-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-title">New Scale</div>
+      <div class="control-group">
+        <label>NAME</label>
+        <input id="scale-name-input" type="text" placeholder="Scale name">
+      </div>
+      <div id="scale-fret-inputs"></div>
+      <div class="control-group">
+        <label>ROOT NOTE</label>
+        <select id="scale-root-select"></select>
+      </div>
+      <div class="modal-actions">
+        <button id="save-scale-btn">save scale</button>
+        <button id="cancel-scale-btn" class="btn-muted">cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Tuning Modal -->
+  <div id="tuning-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-title">New Tuning</div>
+      <div class="control-group">
+        <label>NAME</label>
+        <input id="tuning-name-input" type="text" placeholder="Tuning name">
+      </div>
+      <div id="tuning-string-inputs"></div>
+      <div class="modal-actions">
+        <button id="save-tuning-btn">save tuning</button>
+        <button id="cancel-tuning-btn" class="btn-muted">cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/ui.js"></script>
+</body>
+</html>
