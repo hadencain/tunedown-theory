@@ -1,0 +1,8 @@
+.superpowers/
+.claude/
+docs/
+session_log.md
+CLAUDE.md
+scratch/
+userresources/
+node_modules/
