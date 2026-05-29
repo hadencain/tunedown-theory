@@ -31,3 +31,48 @@ export function getStringFrets(tuningStrings, scaleNotes) {
     return frets;
   });
 }
+
+export function getPositions(intervals, rootNote, tuning) {
+  const scaleNotes = getScaleNotes(intervals, rootNote);
+  const stringFrets = getStringFrets(tuning.strings, scaleNotes);
+
+  const allFrets = new Set();
+  stringFrets.forEach(frets => frets.forEach(f => allFrets.add(f)));
+  const windowStarts = [...allFrets].sort((a, b) => a - b);
+
+  const positions = [];
+  const seen = new Set();
+
+  for (const W of windowStarts) {
+    const windowFrets = stringFrets.map(frets =>
+      frets.filter(f => f >= W && f <= W + 4)
+    );
+    if (windowFrets.every(frets => frets.length > 0)) {
+      const key = windowFrets.map(f => f.join(',')).join('|');
+      if (!seen.has(key)) {
+        seen.add(key);
+        positions.push({
+          label: `position ${positions.length + 1}`,
+          strings: windowFrets,
+        });
+      }
+    }
+  }
+  return positions;
+}
+
+export function deriveIntervalsFromFrets(fretInput, tuning, rootNote) {
+  // fretInput: index 0 = string 1 (highest). tuning.strings: index 0 = string 6 (lowest).
+  const rootPc = noteToPitchClass(rootNote);
+  const pitchClasses = new Set();
+
+  fretInput.forEach((frets, uiIndex) => {
+    const tuningIndex = 5 - uiIndex;
+    const openMidi = noteNameToMidi(tuning.strings[tuningIndex]);
+    frets.forEach(fret => pitchClasses.add((openMidi + fret) % 12));
+  });
+
+  return [...pitchClasses]
+    .map(pc => (pc - rootPc + 12) % 12)
+    .sort((a, b) => a - b);
+}
