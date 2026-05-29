@@ -65,16 +65,26 @@ function populateKeySelect() {
 
 function populateScaleSelect() {
   const sel = document.getElementById('scale-select');
-  sel.innerHTML = state.scales.map(s =>
-    `<option value="${s.name}" ${s.name === state.scale?.name ? 'selected' : ''}>${s.name}</option>`
-  ).join('');
+  sel.innerHTML = '';
+  state.scales.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.name;
+    opt.textContent = s.name;
+    if (s.name === state.scale?.name) opt.selected = true;
+    sel.appendChild(opt);
+  });
 }
 
 function populateTuningSelect() {
   const sel = document.getElementById('tuning-select');
-  sel.innerHTML = state.tunings.map(t =>
-    `<option value="${t.name}" ${t.name === state.tuning?.name ? 'selected' : ''}>${t.name}</option>`
-  ).join('');
+  sel.innerHTML = '';
+  state.tunings.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.name;
+    opt.textContent = t.name;
+    if (t.name === state.tuning?.name) opt.selected = true;
+    sel.appendChild(opt);
+  });
 }
 
 function renderStringInputs() {
@@ -83,13 +93,18 @@ function renderStringInputs() {
   container.innerHTML = '';
   for (let ui = 1; ui <= 6; ui++) {
     const tuningIdx = 6 - ui; // ui=1 → tuningIdx=5 (string 1, highest)
+    const note = state.tuning.strings[tuningIdx];
     const row = document.createElement('div');
     row.className = 'string-row';
-    const note = state.tuning.strings[tuningIdx];
-    row.innerHTML = `
-      <span class="string-num">${ui}</span>
-      <input type="text" value="${note}" data-tuning-idx="${tuningIdx}">
-    `;
+    const num = document.createElement('span');
+    num.className = 'string-num';
+    num.textContent = String(ui);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = note;
+    input.dataset.tuningIdx = tuningIdx;
+    row.appendChild(num);
+    row.appendChild(input);
     container.appendChild(row);
   }
   container.querySelectorAll('input').forEach(input => {
@@ -131,22 +146,38 @@ function openScaleEditor() {
   for (let ui = 1; ui <= 6; ui++) {
     const tuningIdx = 6 - ui;
     const openNote = state.tuning.strings[tuningIdx];
-    const letter = openNote.slice(0, -1);
+    const letter = openNote.replace(/[0-9]/g, '');
     const row = document.createElement('div');
     row.className = 'fret-row';
-    row.innerHTML = `
-      <span class="str-num">${ui}</span>
-      <span class="str-label">${letter}</span>
-      <input type="text" placeholder="e.g. 5 8" data-ui-string="${ui}">
-      <span class="fret-hint">frets</span>
-    `;
+    const strNum = document.createElement('span');
+    strNum.className = 'str-num';
+    strNum.textContent = String(ui);
+    const strLabel = document.createElement('span');
+    strLabel.className = 'str-label';
+    strLabel.textContent = letter;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'e.g. 5 8';
+    input.dataset.uiString = ui;
+    const hint = document.createElement('span');
+    hint.className = 'fret-hint';
+    hint.textContent = 'frets';
+    row.appendChild(strNum);
+    row.appendChild(strLabel);
+    row.appendChild(input);
+    row.appendChild(hint);
     container.appendChild(row);
   }
 
   const rootSel = document.getElementById('scale-root-select');
-  rootSel.innerHTML = KEYS.map(k =>
-    `<option value="${k}" ${k === state.key ? 'selected' : ''}>${k}</option>`
-  ).join('');
+  rootSel.innerHTML = '';
+  KEYS.forEach(k => {
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = k;
+    if (k === state.key) opt.selected = true;
+    rootSel.appendChild(opt);
+  });
 
   document.getElementById('scale-modal').classList.remove('hidden');
 }
@@ -192,10 +223,15 @@ function buildTuningModalInputs(prefillStrings) {
     const tuningIdx = 6 - ui;
     const row = document.createElement('div');
     row.className = 'string-row';
-    row.innerHTML = `
-      <span class="string-num">${ui}</span>
-      <input type="text" value="${prefillStrings[tuningIdx]}" data-tuning-modal-idx="${tuningIdx}">
-    `;
+    const num = document.createElement('span');
+    num.className = 'string-num';
+    num.textContent = String(ui);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = prefillStrings[tuningIdx];
+    input.dataset.tuningModalIdx = tuningIdx;
+    row.appendChild(num);
+    row.appendChild(input);
     container.appendChild(row);
   }
 }
