@@ -47,6 +47,11 @@ function init() {
   document.getElementById('open-scale-editor').addEventListener('click', openScaleEditor);
   document.getElementById('cancel-scale-btn').addEventListener('click', closeScaleEditor);
   document.getElementById('save-scale-btn').addEventListener('click', saveCustomScaleHandler);
+
+  document.getElementById('open-tuning-editor').addEventListener('click', openTuningEditor);
+  document.getElementById('cancel-tuning-btn').addEventListener('click', closeTuningEditor);
+  document.getElementById('save-tuning-btn').addEventListener('click', saveCustomTuningHandler);
+  document.getElementById('save-tuning-link').addEventListener('click', openTuningEditorFromSidebar);
 }
 
 function populateKeySelect() {
@@ -175,6 +180,63 @@ function saveCustomScaleHandler() {
   populateScaleSelect();
   renderTabPanel();
   closeScaleEditor();
+}
+
+function buildTuningModalInputs(prefillStrings) {
+  const container = document.getElementById('tuning-string-inputs');
+  container.innerHTML = '';
+  for (let ui = 1; ui <= 6; ui++) {
+    const tuningIdx = 6 - ui;
+    const row = document.createElement('div');
+    row.className = 'string-row';
+    row.innerHTML = `
+      <span class="string-num">${ui}</span>
+      <input type="text" value="${prefillStrings[tuningIdx]}" data-tuning-modal-idx="${tuningIdx}">
+    `;
+    container.appendChild(row);
+  }
+}
+
+function openTuningEditor() {
+  document.getElementById('tuning-name-input').value = '';
+  buildTuningModalInputs(TUNINGS[0].strings);
+  document.getElementById('tuning-modal').classList.remove('hidden');
+}
+
+function openTuningEditorFromSidebar() {
+  document.getElementById('tuning-name-input').value = '';
+  const currentStrings = [...state.tuning.strings];
+  document.querySelectorAll('#string-inputs input').forEach(input => {
+    const idx = parseInt(input.dataset.tuningIdx);
+    currentStrings[idx] = input.value.trim();
+  });
+  buildTuningModalInputs(currentStrings);
+  document.getElementById('tuning-modal').classList.remove('hidden');
+}
+
+function closeTuningEditor() {
+  document.getElementById('tuning-modal').classList.add('hidden');
+}
+
+function saveCustomTuningHandler() {
+  const name = document.getElementById('tuning-name-input').value.trim();
+  if (!name) { alert('Enter a tuning name.'); return; }
+
+  const strings = new Array(6);
+  document.querySelectorAll('[data-tuning-modal-idx]').forEach(input => {
+    const idx = parseInt(input.dataset.tuningModalIdx);
+    strings[idx] = input.value.trim() || state.tuning.strings[idx];
+  });
+
+  const newTuning = { name, strings };
+  persistTuning(newTuning);
+
+  state.tunings = [...TUNINGS, ...loadCustomTunings()];
+  state.tuning = state.tunings.find(t => t.name === name);
+  populateTuningSelect();
+  renderStringInputs();
+  renderTabPanel();
+  closeTuningEditor();
 }
 
 document.addEventListener('DOMContentLoaded', init);
