@@ -90,6 +90,25 @@ select:focus, input:focus { outline: 1px solid var(--accent); }
 /* Sidebar separator */
 #strings-group { border-top: 1px solid var(--border); padding-top: 12px; }
 
+#custom-manager { border-top: 1px solid var(--border); padding-top: 12px; }
+.custom-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 2px 0;
+}
+.custom-item-name { flex: 1; }
+.custom-item .delete-btn { font-size: 12px; }
+#custom-manager .section-sublabel {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: #333;
+  margin-bottom: 3px;
+  margin-top: 6px;
+}
+
 /* Tab panel */
 #tab-panel {
   flex: 1;

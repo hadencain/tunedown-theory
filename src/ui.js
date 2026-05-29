@@ -52,6 +52,8 @@ function init() {
   document.getElementById('cancel-tuning-btn').addEventListener('click', closeTuningEditor);
   document.getElementById('save-tuning-btn').addEventListener('click', saveCustomTuningHandler);
   document.getElementById('save-tuning-link').addEventListener('click', openTuningEditorFromSidebar);
+
+  renderCustomManager();
 }
 
 function populateKeySelect() {
@@ -179,6 +181,7 @@ function saveCustomScaleHandler() {
   state.scale = state.scales.find(s => s.name === name);
   populateScaleSelect();
   renderTabPanel();
+  renderCustomManager();
   closeScaleEditor();
 }
 
@@ -236,7 +239,60 @@ function saveCustomTuningHandler() {
   populateTuningSelect();
   renderStringInputs();
   renderTabPanel();
+  renderCustomManager();
   closeTuningEditor();
+}
+
+function renderCustomManager() {
+  const scaleList = document.getElementById('custom-scale-list');
+  const tuningList = document.getElementById('custom-tuning-list');
+  const customScales = state.scales.filter(s => s.custom);
+  const customTunings = state.tunings.filter(t => t.custom);
+
+  scaleList.innerHTML = customScales.length
+    ? `<div class="section-sublabel">SCALES</div>` +
+      customScales.map(s => `
+        <div class="custom-item">
+          <span class="custom-item-name">${s.name}</span>
+          <button class="delete-btn" data-delete-scale="${s.name}">×</button>
+        </div>`).join('')
+    : '';
+
+  tuningList.innerHTML = customTunings.length
+    ? `<div class="section-sublabel">TUNINGS</div>` +
+      customTunings.map(t => `
+        <div class="custom-item">
+          <span class="custom-item-name">${t.name}</span>
+          <button class="delete-btn" data-delete-tuning="${t.name}">×</button>
+        </div>`).join('')
+    : '';
+
+  scaleList.querySelectorAll('[data-delete-scale]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteCustomScale(btn.dataset.deleteScale);
+      state.scales = [...SCALES, ...loadCustomScales()];
+      if (state.scale?.name === btn.dataset.deleteScale) {
+        state.scale = state.scales[0];
+      }
+      populateScaleSelect();
+      renderTabPanel();
+      renderCustomManager();
+    });
+  });
+
+  tuningList.querySelectorAll('[data-delete-tuning]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteCustomTuning(btn.dataset.deleteTuning);
+      state.tunings = [...TUNINGS, ...loadCustomTunings()];
+      if (state.tuning?.name === btn.dataset.deleteTuning) {
+        state.tuning = state.tunings[0];
+      }
+      populateTuningSelect();
+      renderStringInputs();
+      renderTabPanel();
+      renderCustomManager();
+    });
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
