@@ -43,6 +43,10 @@ function init() {
     renderStringInputs();
     renderTabPanel();
   });
+
+  document.getElementById('open-scale-editor').addEventListener('click', openScaleEditor);
+  document.getElementById('cancel-scale-btn').addEventListener('click', closeScaleEditor);
+  document.getElementById('save-scale-btn').addEventListener('click', saveCustomScaleHandler);
 }
 
 function populateKeySelect() {
@@ -110,6 +114,67 @@ function renderTabPanel() {
     `;
     grid.appendChild(block);
   });
+}
+
+function openScaleEditor() {
+  document.getElementById('scale-name-input').value = '';
+
+  const container = document.getElementById('scale-fret-inputs');
+  container.innerHTML = '';
+  for (let ui = 1; ui <= 6; ui++) {
+    const tuningIdx = 6 - ui;
+    const openNote = state.tuning.strings[tuningIdx];
+    const letter = openNote.slice(0, -1);
+    const row = document.createElement('div');
+    row.className = 'fret-row';
+    row.innerHTML = `
+      <span class="str-num">${ui}</span>
+      <span class="str-label">${letter}</span>
+      <input type="text" placeholder="e.g. 5 8" data-ui-string="${ui}">
+      <span class="fret-hint">frets</span>
+    `;
+    container.appendChild(row);
+  }
+
+  const rootSel = document.getElementById('scale-root-select');
+  rootSel.innerHTML = KEYS.map(k =>
+    `<option value="${k}" ${k === state.key ? 'selected' : ''}>${k}</option>`
+  ).join('');
+
+  document.getElementById('scale-modal').classList.remove('hidden');
+}
+
+function closeScaleEditor() {
+  document.getElementById('scale-modal').classList.add('hidden');
+}
+
+function saveCustomScaleHandler() {
+  const name = document.getElementById('scale-name-input').value.trim();
+  if (!name) { alert('Enter a scale name.'); return; }
+
+  const rootNote = document.getElementById('scale-root-select').value;
+  const fretInput = [];
+  for (let ui = 1; ui <= 6; ui++) {
+    const input = document.querySelector(`[data-ui-string="${ui}"]`);
+    const frets = (input?.value ?? '').trim().split(/\s+/)
+      .map(Number).filter(n => !isNaN(n) && n >= 0 && n <= 24);
+    fretInput.push(frets);
+  }
+
+  if (fretInput.every(f => f.length === 0)) {
+    alert('Enter at least one fret on any string.');
+    return;
+  }
+
+  const intervals = deriveIntervalsFromFrets(fretInput, state.tuning, rootNote);
+  const newScale = { name, intervals };
+  persistScale(newScale);
+
+  state.scales = [...SCALES, ...loadCustomScales()];
+  state.scale = state.scales.find(s => s.name === name);
+  populateScaleSelect();
+  renderTabPanel();
+  closeScaleEditor();
 }
 
 document.addEventListener('DOMContentLoaded', init);
