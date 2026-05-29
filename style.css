@@ -13,6 +13,9 @@
   --accent-border: #3a6a3a;
   --danger: #9e6e6e;
   --font: 'Courier New', Courier, monospace;
+  --modal-bg: #111;
+  --overlay-bg: rgba(0,0,0,0.7);
+  --accent-hover: #274827;
 }
 
 body {
@@ -107,7 +110,6 @@ select:focus, input:focus { outline: 1px solid var(--accent); }
   gap: 28px;
 }
 
-.position-block { }
 .position-label {
   color: var(--muted);
   font-size: 11px;
@@ -135,7 +137,7 @@ select:focus, input:focus { outline: 1px solid var(--accent); }
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,7 +145,7 @@ select:focus, input:focus { outline: 1px solid var(--accent); }
 }
 .modal.hidden { display: none; }
 .modal-box {
-  background: #111;
+  background: var(--modal-bg);
   border: 1px solid var(--border);
   padding: 20px;
   width: 360px;
@@ -163,7 +165,7 @@ button {
   font-size: 11px;
   cursor: pointer;
 }
-button:hover { background: #274827; }
+button:hover { background: var(--accent-hover); }
 .btn-muted {
   background: none;
   border: none;
