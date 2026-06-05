@@ -135,6 +135,19 @@ function renderTabPanel() {
       <div class="tab-lines">${lines.map(l => `<div>${l}</div>`).join('')}</div>
     `;
     grid.appendChild(block);
+
+    block.addEventListener('click', () => {
+      const isActive = block.classList.contains('active');
+      grid.querySelectorAll('.position-block').forEach(b => {
+        b.classList.remove('active', 'dimmed');
+      });
+      if (!isActive) {
+        block.classList.add('active');
+        grid.querySelectorAll('.position-block').forEach(b => {
+          if (b !== block) b.classList.add('dimmed');
+        });
+      }
+    });
   });
 }
 
