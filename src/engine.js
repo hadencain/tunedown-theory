@@ -41,7 +41,8 @@ export function getPositions(intervals, rootNote, tuning) {
   const windowStarts = [...allFrets].sort((a, b) => a - b);
 
   const positions = [];
-  const seen = new Set();
+  const seenKeys = new Set();
+  const seenShapes = new Set();
 
   for (const W of windowStarts) {
     const windowFrets = stringFrets.map(frets =>
@@ -49,13 +50,18 @@ export function getPositions(intervals, rootNote, tuning) {
     );
     if (windowFrets.every(frets => frets.length > 0)) {
       const key = windowFrets.map(f => f.join(',')).join('|');
-      if (!seen.has(key)) {
-        seen.add(key);
-        positions.push({
-          label: `position ${positions.length + 1}`,
-          strings: windowFrets,
-        });
-      }
+      if (seenKeys.has(key)) continue;
+      seenKeys.add(key);
+
+      const minFret = Math.min(...windowFrets.flat());
+      const shape = windowFrets.map(frets => frets.map(f => f - minFret).join(',')).join('|');
+      if (seenShapes.has(shape)) continue;
+      seenShapes.add(shape);
+
+      positions.push({
+        label: `position ${positions.length + 1}`,
+        strings: windowFrets,
+      });
     }
   }
   return positions;
