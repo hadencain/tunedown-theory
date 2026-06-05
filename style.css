@@ -135,6 +135,11 @@ select:focus, input:focus { outline: 1px solid var(--accent); }
   margin-bottom: 6px;
 }
 .tab-lines { line-height: 1.6; }
+.position-block { cursor: pointer; transition: opacity 0.15s; }
+.position-block.active .position-label { color: var(--accent); }
+.position-block.active .tab-lines { color: var(--accent); }
+.position-block.active { border-left: 2px solid var(--accent); padding-left: 6px; }
+.position-block.dimmed { opacity: 0.25; }
 
 /* Custom entry with delete */
 .select-option-row {
