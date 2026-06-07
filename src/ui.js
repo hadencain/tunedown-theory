@@ -130,10 +130,18 @@ function renderTabPanel() {
     const block = document.createElement('div');
     block.className = 'position-block';
     const lines = positionToTabLines(pos, state.tuning);
-    block.innerHTML = `
-      <div class="position-label">${pos.label}</div>
-      <div class="tab-lines">${lines.map(l => `<div>${l}</div>`).join('')}</div>
-    `;
+    const label = document.createElement('div');
+    label.className = 'position-label';
+    label.textContent = pos.label;
+    const tabLines = document.createElement('div');
+    tabLines.className = 'tab-lines';
+    lines.forEach(l => {
+      const lineEl = document.createElement('div');
+      lineEl.textContent = l;
+      tabLines.appendChild(lineEl);
+    });
+    block.appendChild(label);
+    block.appendChild(tabLines);
     grid.appendChild(block);
 
     block.addEventListener('click', () => {
